@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add PJLink projector",
+        "data": {
+          "host": "IP address",
+          "port": "Port",
+          "password": "Password (if required)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid or missing password"
+    },
+    "abort": {
+      "already_configured": "Projector is already configured"
+    }
+  },
+  "entity": {
+    "switch": {
+      "power": {"name": "Power"},
+      "audio_mute": {"name": "Audio mute"},
+      "video_mute": {"name": "Video mute"}
+    },
+    "select": {
+      "source": {"name": "Source"}
+    },
+    "button": {
+      "volume_up": {"name": "Volume up"},
+      "volume_down": {"name": "Volume down"}
+    }
+  }
+}
