@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import voluptuous as vol
@@ -11,6 +12,9 @@ from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT
 
 from .const import DEFAULT_PORT, DOMAIN, TIMEOUT
 from .pjlink import PJLinkAuthError, PJLinkClient, PJLinkError
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class PJLinkConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -31,7 +35,8 @@ class PJLinkConfigFlow(ConfigFlow, domain=DOMAIN):
                 info = await PJLinkClient(host, port, password, TIMEOUT).get_info()
             except PJLinkAuthError:
                 errors["base"] = "invalid_auth"
-            except PJLinkError:
+            except PJLinkError as err:
+                _LOGGER.warning("PJLink setup for %s:%s failed: %s", host, port, err)
                 errors["base"] = "cannot_connect"
             else:
                 data = {CONF_HOST: host, CONF_PORT: port}

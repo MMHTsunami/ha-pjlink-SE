@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from hashlib import md5
+
+_LOGGER = logging.getLogger(__name__)
 
 INPUT_TYPES = {"1": "RGB", "2": "Video", "3": "Digital", "4": "Storage", "5": "Network", "6": "Internal"}
 
@@ -58,7 +61,11 @@ class PJLinkSession:
                 ).strip()
         except (OSError, TimeoutError, asyncio.IncompleteReadError) as err:
             await self.close()
-            raise PJLinkConnectionError(str(err)) from err
+            _LOGGER.warning(
+                "PJLink connect/greeting to %s:%s failed: %r", self._host, self._port, err
+            )
+            raise PJLinkConnectionError(repr(err)) from err
+        _LOGGER.debug("PJLink greeting from %s:%s: %r", self._host, self._port, line)
         parts = line.split()
         if line.upper().startswith("PJLINK ERRA"):
             await self.close()
@@ -106,7 +113,9 @@ class PJLinkSession:
                     "ascii", "ignore"
                 ).strip()
         except (OSError, TimeoutError, asyncio.IncompleteReadError) as err:
-            raise PJLinkConnectionError(str(err)) from err
+            _LOGGER.warning("PJLink command %s to %s failed: %r", name, self._host, err)
+            raise PJLinkConnectionError(repr(err)) from err
+        _LOGGER.debug("PJLink %s -> %r", data.strip(), line)
         if line.upper().startswith("PJLINK ERRA"):
             raise PJLinkAuthError("Authentication error")
         head = f"%{cls}{name}="
