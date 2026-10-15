@@ -51,18 +51,20 @@ class PJLinkSession:
         self.pjlink_class = 1
 
     async def __aenter__(self) -> "PJLinkSession":
+        stage = "tcp connect"
         try:
             async with asyncio.timeout(self._timeout):
                 self._reader, self._writer = await asyncio.open_connection(
                     self._host, self._port
                 )
+                stage = "waiting for greeting"
                 line = (await self._reader.readuntil(b"\r")).decode(
                     "ascii", "ignore"
                 ).strip()
         except (OSError, TimeoutError, asyncio.IncompleteReadError) as err:
             await self.close()
             _LOGGER.warning(
-                "PJLink connect/greeting to %s:%s failed: %r", self._host, self._port, err
+                "PJLink %s:%s failed during %s: %r", self._host, self._port, stage, err
             )
             raise PJLinkConnectionError(repr(err)) from err
         _LOGGER.debug("PJLink greeting from %s:%s: %r", self._host, self._port, line)
