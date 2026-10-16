@@ -13,6 +13,7 @@ from hashlib import md5
 from pathlib import Path
 
 import pytest
+import pytest_asyncio
 
 _path = Path(__file__).parent.parent / "custom_components" / "pjlink_se" / "pjlink.py"
 _spec = importlib.util.spec_from_file_location("pjlink", _path)
@@ -89,7 +90,7 @@ class FakeProjector:
         return f"{head}=OK"
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def projector():
     fake = FakeProjector()
     port = await fake.start()
