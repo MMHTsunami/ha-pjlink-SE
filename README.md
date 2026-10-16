@@ -18,6 +18,7 @@ Hitachi control is useful when another controller (for example Bitfocus Companio
 | Entity | Platform | Notes |
 |---|---|---|
 | Power | switch | on while warming up |
+| Power status | sensor | standby / on / warming up / cooling down (Hitachi control cannot report warming up) |
 | Source | select | names from `INNM` on class 2, generic names on class 1 |
 | Audio mute / Video mute | switch | via `AVMT` |
 | Volume up / down | button | `SVOL`, PJLink class 2 only |

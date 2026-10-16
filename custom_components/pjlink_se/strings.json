@@ -44,6 +44,17 @@
     "select": {
       "source": {"name": "Source"}
     },
+    "sensor": {
+      "power_status": {
+        "name": "Power status",
+        "state": {
+          "standby": "Standby",
+          "on": "On",
+          "warming_up": "Warming up",
+          "cooling_down": "Cooling down"
+        }
+      }
+    },
     "button": {
       "volume_up": {"name": "Volume up"},
       "volume_down": {"name": "Volume down"}

@@ -11,7 +11,7 @@ from .coordinator import PJLinkCoordinator
 from .hitachi import HitachiClient
 from .pjlink import PJLinkClient
 
-PLATFORMS = [Platform.SWITCH, Platform.SELECT, Platform.BUTTON]
+PLATFORMS = [Platform.SWITCH, Platform.SELECT, Platform.BUTTON, Platform.SENSOR]
 
 type PJLinkConfigEntry = ConfigEntry[PJLinkCoordinator]
 
