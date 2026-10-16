@@ -48,7 +48,19 @@ class PJLinkSession:
         self._reader: asyncio.StreamReader | None = None
         self._writer: asyncio.StreamWriter | None = None
         self._prefix = ""
+        self._buf = bytearray()
         self.pjlink_class = 1
+
+    async def _readline(self) -> str:
+        """Read until CR or LF; some devices terminate lines with LF."""
+        assert self._reader is not None
+        self._buf = bytearray()
+        while not any(c in self._buf for c in b"\r\n"):
+            chunk = await self._reader.read(256)
+            if not chunk:
+                raise asyncio.IncompleteReadError(bytes(self._buf), None)
+            self._buf += chunk
+        return self._buf.decode("ascii", "ignore").strip()
 
     async def __aenter__(self) -> "PJLinkSession":
         stage = "tcp connect"
@@ -58,13 +70,12 @@ class PJLinkSession:
                     self._host, self._port
                 )
                 stage = "waiting for greeting"
-                line = (await self._reader.readuntil(b"\r")).decode(
-                    "ascii", "ignore"
-                ).strip()
+                line = await self._readline()
         except (OSError, TimeoutError, asyncio.IncompleteReadError) as err:
             await self.close()
             _LOGGER.warning(
-                "PJLink %s:%s failed during %s: %r", self._host, self._port, stage, err
+                "PJLink %s:%s failed during %s: %r (partial data: %r)",
+                self._host, self._port, stage, err, bytes(self._buf),
             )
             raise PJLinkConnectionError(repr(err)) from err
         _LOGGER.debug("PJLink greeting from %s:%s: %r", self._host, self._port, line)
@@ -111,9 +122,7 @@ class PJLinkSession:
             async with asyncio.timeout(self._timeout):
                 self._writer.write(data.encode())
                 await self._writer.drain()
-                line = (await self._reader.readuntil(b"\r")).decode(
-                    "ascii", "ignore"
-                ).strip()
+                line = await self._readline()
         except (OSError, TimeoutError, asyncio.IncompleteReadError) as err:
             _LOGGER.warning("PJLink command %s to %s failed: %r", name, self._host, err)
             raise PJLinkConnectionError(repr(err)) from err
