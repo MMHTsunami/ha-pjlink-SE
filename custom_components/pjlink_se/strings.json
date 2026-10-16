@@ -2,11 +2,28 @@
   "config": {
     "step": {
       "user": {
+        "title": "Add projector",
+        "description": "Choose how Home Assistant controls the projector.",
+        "menu_options": {
+          "pjlink": "PJLink (port 4352)",
+          "hitachi": "Hitachi network control (port 9715 or 23)"
+        }
+      },
+      "pjlink": {
         "title": "Add PJLink projector",
         "data": {
           "host": "IP address",
           "port": "Port",
           "password": "Password (if required)"
+        }
+      },
+      "hitachi": {
+        "title": "Add Hitachi projector",
+        "description": "Use the Network Control Port settings from the projector web page. Port 9715 is Network Control Port 2, port 23 is Network Control Port 1.",
+        "data": {
+          "host": "IP address",
+          "port": "Port",
+          "password": "Authentication password (if enabled)"
         }
       }
     },

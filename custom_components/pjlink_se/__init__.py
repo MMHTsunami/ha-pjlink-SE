@@ -6,8 +6,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant
 
-from .const import TIMEOUT
+from .const import CONF_PROTOCOL, PROTOCOL_HITACHI, TIMEOUT
 from .coordinator import PJLinkCoordinator
+from .hitachi import HitachiClient
 from .pjlink import PJLinkClient
 
 PLATFORMS = [Platform.SWITCH, Platform.SELECT, Platform.BUTTON]
@@ -17,7 +18,8 @@ type PJLinkConfigEntry = ConfigEntry[PJLinkCoordinator]
 
 async def async_setup_entry(hass: HomeAssistant, entry: PJLinkConfigEntry) -> bool:
     """Set up a projector from a config entry."""
-    client = PJLinkClient(
+    client_cls = HitachiClient if entry.data.get(CONF_PROTOCOL) == PROTOCOL_HITACHI else PJLinkClient
+    client = client_cls(
         entry.data[CONF_HOST],
         entry.data[CONF_PORT],
         entry.data.get(CONF_PASSWORD),
